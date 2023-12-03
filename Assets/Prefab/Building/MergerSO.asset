@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72777116776376542b16fc3123942a1f, type: 3}
+  m_Name: MergerSO
+  m_EditorClassIdentifier: 
+  buildingName: Merger
+  prefab: {fileID: 1449100758863205772, guid: 1edc9c3e25255744cbe3ad771e524f89, type: 3}
+  phantomVisual: {fileID: 5787241618307945352, guid: 8a48655814ec5e24f8a5531e01fd483b, type: 3}
+  width: 1
+  height: 1

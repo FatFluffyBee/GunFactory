@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72777116776376542b16fc3123942a1f, type: 3}
+  m_Name: StorageSO
+  m_EditorClassIdentifier: 
+  buildingName: Storage
+  prefab: {fileID: 5272506193665252064, guid: ce3d63530726e1c44bbd3244127fe0dd, type: 3}
+  phantomVisual: {fileID: 4873549450587244670, guid: 4debc3d610c12854c83446f6b9b40d9a, type: 3}
+  width: 1
+  height: 1

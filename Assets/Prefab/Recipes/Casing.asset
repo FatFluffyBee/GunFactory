@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 176fad130a784004db27f70682acc023, type: 3}
+  m_Name: Casing
+  m_EditorClassIdentifier: 
+  ingredientsItems:
+  - item: {fileID: 11400000, guid: 87d83061539c076438070066eb8cf36f, type: 2}
+    amount: 2
+  producedItems:
+  - item: {fileID: 11400000, guid: c0d9ac2c37ac592449e0c3b4b24c94f6, type: 2}
+    amount: 1
+  timeToComplete: 2
