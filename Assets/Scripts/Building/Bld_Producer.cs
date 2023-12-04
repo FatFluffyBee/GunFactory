@@ -6,7 +6,6 @@ using static Bld_Producer;
 
 public class Bld_Producer : PlacedObject
 {
-    public RecipeSO recipeTest;
     private Bld_ConveyorBelt conveyorBelt;
 
     bool isProducing = false;
@@ -16,15 +15,12 @@ public class Bld_Producer : PlacedObject
         base.Setup();
 
         ChangeRecipe(TESTSCRIPT.instance.recipes[0]);
-        recipeTest = currentRecipe;
        
         Debug.Log("Setup Producer Building");
     }
 
     private void Update() // Refaire en plus géneral et concis (work with other things)
     {
-        recipeTest = currentRecipe;
-
         if(isProducing) 
         {
             timerCount += Time.deltaTime;
