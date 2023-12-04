@@ -12,15 +12,15 @@ public class ConveyorSystem : MonoBehaviour
         instance = this;
     }
 
-    private void Start()
-    {
-        TickManager.instance.OnTick.AddListener(AvanceConveyorBelts);
-    }
-
     bool debug = true;
     private List<BeltPath> beltPaths = new List<BeltPath>();
 
-    private void AvanceConveyorBelts() //fonctiuon qui avance tout les conveyor belts //àremplacer par directement 
+    private void Update()
+    {
+        AvanceConveyorBelts();
+    }
+
+    private void AvanceConveyorBelts() //fonctiuon qui avance tout les conveyor belts //ï¿½remplacer par directement 
     {
         foreach(BeltPath path in beltPaths) 
         { 
@@ -29,66 +29,45 @@ public class ConveyorSystem : MonoBehaviour
 
             for (int i = belts.Count-1; i >= 0; i--)
             {
-                if(i == belts.Count - 1) //Si le conveyor est le dernier de la liste on va verifier si il peut output son objet dans un batiment
+                if (i == belts.Count - 1) //Si le conveyor est le dernier de la liste on va verifier si il peut output son objet dans un batiment
                 {
-                    if (belts[i].GetHoldItem() != null)  //si il  a un bojet
+
+                    if (belts[i].CanSendItem())  //si la belt peut envoyer un objet
                     {
                         PlacedObject endBuilding = FactoryGrid.instance.GetGridObject(belts[i].GetOriginAndDirForward())?.GetPlacedObject(); //si il yu a un batiment en face de lui
-                        if(endBuilding != null)                                                                                               
-                            if (endBuilding.IsPosOnInputPos(belts[i].GetOrigin()))           //Si il est positionné devant un accès de ce building                                
+                        if (endBuilding != null)
+                            if (endBuilding.IsPosOnInputPos(belts[i].GetOrigin()))           //Si il est positionnï¿½ devant un accï¿½s de ce building                                
                             {
-                                if (endBuilding.CheckIfCanSendItem(belts[i]))          //Si le building peut recevoir l'item du conveyor 
+                                if (endBuilding.CanReceiveSpecificItemFromBelt(belts[i]))          //Si le building peut recevoir l'item du conveyor 
                                 {
-                                    if(endBuilding.GetComponent<Bld_Producer>())
-                                    {
-                                        endBuilding.AddItemToStorage(belts[i].GetHoldItem().itemSO);
-                                        GameObject worldItem = belts[i].GetHoldItem().gameObject;
-                                        belts[i].SetHoldItem(null);
-                                        Destroy(worldItem);
-                                    }
-                                    else if(endBuilding.GetComponent<Bld_Merger>())
-                                    {
-                                        WorldItem worldItem = belts[i].GetHoldItem();
-                                        endBuilding.GetComponent<Bld_Merger>().SetWorldItem(worldItem);
-                                        worldItem.SetTargetPosition(endBuilding.GetComponent<Bld_Merger>().GetHoldPointPosition());
-                                        belts[i].SetHoldItem(null);
-}
-                                    else if (endBuilding.GetComponent<Bld_Splitter>())
-                                    {
-                                        WorldItem worldItem = belts[i].GetHoldItem();
-                                        endBuilding.GetComponent<Bld_Splitter>().SetWorldItem(worldItem);
-                                        worldItem.SetTargetPosition(endBuilding.GetComponent<Bld_Splitter>().GetHoldPointPosition());
-                                        belts[i].SetHoldItem(null);
-                                    }
-
-                                    nextIsFree = true;
+                                    WorldItem worldItem = belts[i].GetHoldItem();
+                                    belts[i].SetWorldItemAndBeltStatus(null);
+                                    endBuilding.ReceiveItem(worldItem);
                                 }
                             }
                     }
+
+                    if (belts[i].CanReceiveItem())
+                        nextIsFree = true;
                     else
-                     nextIsFree = true;
+                        nextIsFree = false;
                 }
                 else
                 {
                     if (nextIsFree)
                     {
-                        if (belts[i].GetHoldItem() != null && i < belts.Count - 1)
+                        if (belts[i].CanSendItem())
                         {
                             WorldItem worldItem = belts[i].GetHoldItem();
-                            belts[i].SetHoldItem(null);
-                            belts[i + 1].SetHoldItem(worldItem);
-                            worldItem.SetTargetPosition(belts[i + 1].GetHoldPointPosition());
+                            belts[i].SetWorldItemAndBeltStatus(null);
+                            belts[i + 1].ReceiveItem(worldItem);
                         }
                     }
 
-                    if (belts[i].GetHoldItem() == null)
-                    {
+                    if (belts[i].CanReceiveItem())
                         nextIsFree = true;
-                    }
                     else
-                    {
                         nextIsFree = false;
-                    }
                 }
             }
         }
@@ -106,14 +85,14 @@ public class ConveyorSystem : MonoBehaviour
         Bld_ConveyorBelt beltAfter = null;
         Bld_ConveyorBelt beltBefore = null;
 
-        if (beltPaths.Count >= 0) // si premier conveyor belt placé
+        if (beltPaths.Count >= 0) // si premier conveyor belt placï¿½
         {
             Bld_ConveyorBelt beltToCheck = FactoryGrid.instance.GetGridObject(newConveyorBelt.GetOriginAndDirForward())?.GetPlacedObject()?.GetComponent<Bld_ConveyorBelt>();
 
             if (beltToCheck != null)
             {
-                if (beltPaths[ReturnIndexBeltPath(beltToCheck)].PosInList(beltToCheck) == 0) //la belt selectionnée est la première de sa liste (pas d'intersection)
-                    if (beltToCheck.GetOriginAndDirForward() != newConveyorBelt.GetOrigin()) //les deux belt ne se font pas face à face
+                if (beltPaths[ReturnIndexBeltPath(beltToCheck)].PosInList(beltToCheck) == 0) //la belt selectionnï¿½e est la premiï¿½re de sa liste (pas d'intersection)
+                    if (beltToCheck.GetOriginAndDirForward() != newConveyorBelt.GetOrigin()) //les deux belt ne se font pas face ï¿½ face
                     {
                         beltAfter = beltToCheck;
                         isStart = true;
@@ -121,13 +100,13 @@ public class ConveyorSystem : MonoBehaviour
             }
 
             int success = 0;
-            foreach (Vector2Int pos in newConveyorBelt.GetOriginAndDirSideAndBack()) //on vérifie les 3 autres côtés de la belt
+            foreach (Vector2Int pos in newConveyorBelt.GetOriginAndDirSideAndBack()) //on vï¿½rifie les 3 autres cï¿½tï¿½s de la belt
             {
                 beltToCheck = FactoryGrid.instance.GetGridObject(pos)?.GetPlacedObject()?.GetComponent<Bld_ConveyorBelt>();
 
                 if (beltToCheck != null)
                 {
-                    if (beltToCheck.GetOriginAndDirForward() == newConveyorBelt.GetOrigin()) //la belt checkée fait face au conveyor belt
+                    if (beltToCheck.GetOriginAndDirForward() == newConveyorBelt.GetOrigin()) //la belt checkï¿½e fait face au conveyor belt
                     {
                         beltBefore = beltToCheck;
                         success++;
@@ -192,10 +171,10 @@ public class ConveyorSystem : MonoBehaviour
 
         list = beltPaths[beltPathIndex].GetConveyorBelts();
 
-        if (list.Count == 1) //la section n'est compôsée que d'un seul belt
+        if (list.Count == 1) //la section n'est compï¿½sï¿½e que d'un seul belt
             beltPaths.RemoveAt(beltPathIndex);
 
-        else if(indexInConveyorList == 0 || indexInConveyorList == list.Count - 1)  //l'element a suipprimé est au début ou en fin de chemin
+        else if(indexInConveyorList == 0 || indexInConveyorList == list.Count - 1)  //l'element a suipprimï¿½ est au dï¿½but ou en fin de chemin
             beltPaths[beltPathIndex].RemoveAt(indexInConveyorList);
 
         else

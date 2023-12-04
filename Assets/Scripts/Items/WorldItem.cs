@@ -4,32 +4,37 @@ using UnityEngine;
 
 public class WorldItem : MonoBehaviour
 {
-    private bool isMoving = false;
+    public bool isMoving = false;
     Vector3 targetPosition;
     public ItemSO itemSO;
-    private int nTick = 16;
+    private int speed = 2; 
+    PlacedObject itemHolder;
 
-    private void Start()
-    {
-        TickManager.instance.OnTick.AddListener(OnTickMoveWorldItem);
-    }
 
-    private void OnTickMoveWorldItem()
+    private void Update()
     {
         if(isMoving)
         {
-            Vector3 newPosition = Vector3.MoveTowards(transform.position, targetPosition, 10f / (float)nTick);
+            Vector3 newPosition = Vector3.MoveTowards(transform.position, targetPosition, 10f * Time.deltaTime * speed);
             transform.position = newPosition;
         }
 
         if(targetPosition == transform.position)
         {
             isMoving = false;
+
+            if (itemHolder.GetComponent<Bld_ConveyorBelt>())
+                itemHolder.GetComponent<Bld_ConveyorBelt>().SetStateToReadyToSend();
+            else if (itemHolder.GetComponent<Bld_Merger>())
+                itemHolder.GetComponent<Bld_Merger>().SetStateToReadyToSend();
+            else if (itemHolder.GetComponent<Bld_Splitter>())
+                itemHolder.GetComponent<Bld_Splitter>().SetStateToReadyToSend();
         }
     }
 
-    public void SetTargetPosition(Vector3 targetPosition)
+    public void SetTargetPositionAndCurrentBelt(Vector3 targetPosition, PlacedObject itemHolder)
     {
+        this.itemHolder = itemHolder;
         this.targetPosition = targetPosition;
         isMoving = true;
     }

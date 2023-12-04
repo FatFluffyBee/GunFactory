@@ -4,37 +4,35 @@ using UnityEngine;
 
 public class Bld_Merger : PlacedObject
 {
-    WorldItem worldItem;
-    int rotatingIndex = 0;
+    private WorldItem worldItem;
+    public int rotatingIndex = 0;
 
-    public enum Bld_State { Ready, Sending, }
-    Bld_State mergerState;
+    public enum Bld_State { Empty, Moving, ReadyToSend }
+    public  Bld_State bldState;
 
-    List<Bld_ConveyorBelt> inputBelts = new List<Bld_ConveyorBelt>();
-    Bld_ConveyorBelt outputBelt;
+    private List<Bld_ConveyorBelt> inputBelts = new List<Bld_ConveyorBelt>();
+    private Bld_ConveyorBelt outputBelt;
     public Transform holdPoint;
-    public int nTickToReachEnd = 16;
 
-    private void Start()
+    private void Update() //merger ne fonctionne pas de la faï¿½on voulue, problï¿½me sera rï¿½solu avec le systï¿½me de tick
     {
-        TickManager.instance.OnTick.AddListener(MergerOnTick);
-    }
-
-    public void MergerOnTick() //merger ne fonctionne pas de la façon voulue, problème sera résolu avec le système de tick
-    {
-        Debug.Log("Merger On Tick");
-        if (mergerState == Bld_State.Sending)
+        if (CanSendItem())
         {
-            if(timerCount > timer)
-            {
-                SendItemOnConveyor();
-            }
-
-            timerCount += Time.deltaTime;
+            SendItemOnConveyor();
         }
 
-        if (mergerState == Bld_State.Ready)
+        if(bldState == Bld_State.Empty) 
+        {
             RotateIndex();
+        }
+    }
+
+    public bool CanSendItem()
+    {
+        if (bldState == Bld_State.ReadyToSend)
+            return true;
+        else
+            return false;
     }
 
     private void SendItemOnConveyor()
@@ -42,34 +40,26 @@ public class Bld_Merger : PlacedObject
         if (outputBelt == null)
             ActualiseOutputBelt();
 
-        if (outputBelt != null) //maybe remplacer par fonction plus génerale
-        {
-            if (outputBelt.GetHoldItem() == null)
+        if (outputBelt != null)
+            if (outputBelt.CanReceiveItem())
             {
-                outputBelt.SetHoldItem(worldItem);
-                worldItem.SetTargetPosition(outputBelt.GetHoldPointPosition());
+                outputBelt.ReceiveItem(worldItem);
                 worldItem = null;
-                mergerState = Bld_State.Ready;
-
+                bldState = Bld_State.Empty;
             }
-        }
     }
 
-    public override bool CheckIfCanSendItem(Bld_ConveyorBelt belt) //called by conveyor interacting with it
+    public override bool CanReceiveSpecificItemFromBelt(Bld_ConveyorBelt belt) //called by conveyor interacting with it
     {
-        if (mergerState == Bld_State.Ready)
+        if (bldState == Bld_State.Empty)
         {
             ActualiseInputBelts();
 
             if (belt == inputBelts[rotatingIndex])
             {
-                mergerState = Bld_State.Sending;
-                timerCount = 0;
-                //feedback cause item will be sent (might need it's own function later)
                 return true;
-            }                
+            }
         }
-
         return false;
     }
 
@@ -113,7 +103,6 @@ public class Bld_Merger : PlacedObject
         }
     }
 
-
     public override void Setup()
     {
         base.Setup();
@@ -122,7 +111,7 @@ public class Bld_Merger : PlacedObject
         inputBelts.Add(null);
         inputBelts.Add(null);
 
-        timer = 2f;
+         Debug.Log("On Merger Setup");
     }
 
     public override void OnSupression()
@@ -137,13 +126,28 @@ public class Bld_Merger : PlacedObject
         return worldItem;
     }
 
-    public void SetWorldItem(WorldItem worldItem)
+    public void SetWorldItemAndBeltStatus(WorldItem worldItem)
     {
         this.worldItem = worldItem;
+
+        if (worldItem == null)
+            bldState = Bld_State.Empty;
+        else
+            bldState = Bld_State.Moving;
     }
 
     public Vector3 GetHoldPointPosition()
     {
         return holdPoint.position;
+    }
+    public void SetStateToReadyToSend()
+    {
+        bldState = Bld_State.ReadyToSend;
+    }
+
+    public override void ReceiveItem(WorldItem item)
+    {
+        SetWorldItemAndBeltStatus(item);
+        item.SetTargetPositionAndCurrentBelt(GetHoldPointPosition(), this);
     }
 }

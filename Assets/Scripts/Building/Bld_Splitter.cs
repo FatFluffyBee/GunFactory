@@ -4,64 +4,54 @@ using UnityEngine;
 
 public class Bld_Splitter : PlacedObject
 {
-    WorldItem worldItem;
-    int rotatingIndex = 0;
+    private WorldItem worldItem;
+    public int rotatingIndex = 0;
 
-    public enum Bld_State { Ready, Sending, }
-    Bld_State mergerState;
+    public enum Bld_State { Empty, Moving, ReadyToSend}
+    private Bld_State bldState;
 
-    List<Bld_ConveyorBelt> outputBelts = new List<Bld_ConveyorBelt>();
-    Bld_ConveyorBelt inputBelt;
+    private List<Bld_ConveyorBelt> outputBelts = new List<Bld_ConveyorBelt>();
+    private Bld_ConveyorBelt inputBelt;
     public Transform holdPoint;
-    public int nTickToReachEnd = 16;
 
-    private void Start()
+    private void Update()
     {
-        TickManager.instance.OnTick.AddListener(SplitterOnTick);
-    }
-
-    public void SplitterOnTick() 
-    {
-        Debug.Log("Splitter On Tick");
-        if (mergerState == Bld_State.Sending)
+        if (CanSendItem())
         {
-            if (timerCount > timer)
-            {
-                SendItemOnConveyor();
-                RotateIndex();
-            }
-            timerCount += Time.deltaTime;
+            SendItemOnConveyor();
+            RotateIndex();
         }          
     }
 
     private void SendItemOnConveyor()
     {
-        if (outputBelts[rotatingIndex] == null)
-            ActualiseOutputBelts();
+        ActualiseOutputBelts();
 
-        if (outputBelts[rotatingIndex] != null) //maybe remplacer par fonction plus génerale
+        if (outputBelts[rotatingIndex] == null)
+            RotateIndex();
+
+        if (outputBelts[rotatingIndex] == null)
+            RotateIndex();
+        
+        if(outputBelts[rotatingIndex] == null)
+            return;
+        else
         {
-            if (outputBelts[rotatingIndex].GetHoldItem() == null)
+            if (outputBelts[rotatingIndex].CanReceiveItem())
             {
-                outputBelts[rotatingIndex].SetHoldItem(worldItem);
-                worldItem.SetTargetPosition(outputBelts[rotatingIndex].GetHoldPointPosition());
+                outputBelts[rotatingIndex].ReceiveItem(worldItem);
                 worldItem = null;
-                mergerState = Bld_State.Ready;
+                bldState = Bld_State.Empty;
             }
         }
     }
 
-    public override bool CheckIfCanSendItem(Bld_ConveyorBelt belt) //called by conveyor interacting with it
+    public override bool CanReceiveSpecificItemFromBelt(Bld_ConveyorBelt belt) //called by conveyor interacting with it
     {
-       if (mergerState == Bld_State.Ready)
-        {
-            mergerState = Bld_State.Sending;
-            timerCount = 0;
-            //feedback cause item will be sent (might need it's own function later)
+        if (bldState == Bld_State.Empty)
             return true;
-        }
-
-        return false;
+        else
+            return false;
     }
 
     public void ActualiseOutputBelts()
@@ -75,9 +65,11 @@ public class Bld_Splitter : PlacedObject
                     if (tmp.IsPosOnInputPos(GetOrigin()))
                     {
                         outputBelts[i] = tmp;
+                        Debug.Log(outputBelts[i]);
                     }
             }
         }
+        
     }
 
     public void ActualiseInputBelt()
@@ -104,6 +96,13 @@ public class Bld_Splitter : PlacedObject
         }
     }
 
+    public bool CanSendItem()
+    {
+        if (bldState == Bld_State.ReadyToSend)
+            return true;
+        else
+            return false;
+    }
 
     public override void Setup()
     {
@@ -113,7 +112,7 @@ public class Bld_Splitter : PlacedObject
         outputBelts.Add(null);
         outputBelts.Add(null);
 
-        timer = 2f;
+        Debug.Log("On Setup Splitter");
     }
 
     public override void OnSupression()
@@ -128,9 +127,14 @@ public class Bld_Splitter : PlacedObject
         return worldItem;
     }
 
-    public void SetWorldItem(WorldItem worldItem)
+    public void SetWorldItemAndBeltStatus(WorldItem worldItem)
     {
         this.worldItem = worldItem;
+
+        if (worldItem == null)
+            bldState = Bld_State.Empty;
+        else
+            bldState = Bld_State.Moving;
     }
 
     public Vector3 GetHoldPointPosition()
@@ -138,7 +142,14 @@ public class Bld_Splitter : PlacedObject
         return holdPoint.position;
     }
 
+    public void SetStateToReadyToSend()
+    {
+        bldState = Bld_State.ReadyToSend;
+    }
 
-
-
+    public override void ReceiveItem(WorldItem item)
+    {
+        SetWorldItemAndBeltStatus(item);
+        item.SetTargetPositionAndCurrentBelt(GetHoldPointPosition(), this);
+    }
 }

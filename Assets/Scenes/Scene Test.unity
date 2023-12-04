@@ -240,7 +240,6 @@ GameObject:
   - component: {fileID: 138162132}
   - component: {fileID: 138162131}
   - component: {fileID: 138162133}
-  - component: {fileID: 138162134}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -285,18 +284,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 04de1b98582b7c34ca28c9d7b97ece4a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &138162134
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 138162130}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 20faec7c1c53b8e43a8d6144e863fd72, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &266940628
@@ -3307,7 +3294,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1619917328}
   m_LocalRotation: {x: 0.5986743, y: 0, z: 0, w: 0.80099255}
-  m_LocalPosition: {x: 90.9, y: 138.3, z: -8}
+  m_LocalPosition: {x: 53, y: 53, z: 27}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

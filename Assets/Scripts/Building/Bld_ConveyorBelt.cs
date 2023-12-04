@@ -5,9 +5,10 @@ using UnityEngine;
 
 public class Bld_ConveyorBelt : PlacedObject
 {
+    public enum Bld_State {Empty, Moving, ReadyToSend}
+    public Bld_State bldState = Bld_State.Empty;
     public WorldItem worldItem;
     public Transform holdPoint;
-    public int nTickToReachEnd = 16;
     public override void Setup()
     {
         base.Setup();
@@ -32,13 +33,45 @@ public class Bld_ConveyorBelt : PlacedObject
     {
         return worldItem;
     }
-    public void SetHoldItem(WorldItem worldItem)
+    public void SetWorldItemAndBeltStatus(WorldItem worldItem)
     {
         this.worldItem = worldItem;
+
+        if(worldItem == null)
+            bldState = Bld_State.Empty;
+        else
+            bldState = Bld_State.Moving;
     }
 
     public Vector3 GetHoldPointPosition()
     {
         return holdPoint.position;
+    }
+
+    public bool CanSendItem()
+    {
+        if(bldState == Bld_State.ReadyToSend)
+            return true;
+        else
+            return false;
+    }
+
+    public bool CanReceiveItem()
+    {
+        if (bldState == Bld_State.Empty)
+            return true;
+        else
+            return false;
+    }
+
+    public void SetStateToReadyToSend()
+    {
+        bldState = Bld_State.ReadyToSend;
+    }
+
+    public override void ReceiveItem(WorldItem item)
+    {
+        SetWorldItemAndBeltStatus(item);
+        item.SetTargetPositionAndCurrentBelt(GetHoldPointPosition(), this);
     }
 }

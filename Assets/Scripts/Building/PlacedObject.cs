@@ -103,7 +103,6 @@ public class PlacedObject : MonoBehaviour
     // compare la position avec la position des inputs de l'objet (fct géneral = objet check output pos for placed object, and check on this object for input pos. if true thn cionnection)
     public bool IsPosOnInputPos(List<Vector2Int> buiildingPoses) //pas besoin de prendre en compte la direction car l'objet preneur doit déja faire face à l'objet pour le récuperer
     {
-        Debug.Log("Checking");
         if (inputAccessesPos.Count == 0)
         {
             Debug.Log("Building has no inputs");
@@ -116,7 +115,6 @@ public class PlacedObject : MonoBehaviour
                 //Debug.Log(inputPos + " " + buiildingPos);
                 if (inputPos == buiildingPos)
                 {
-                    Debug.Log(this.gameObject.name);
                     return true;
                 }
             }
@@ -161,7 +159,7 @@ public class PlacedObject : MonoBehaviour
         return IsPosOnInputPos(buildingPos);
     }
 
-    public virtual bool CheckIfCanSendItem(Bld_ConveyorBelt belt)
+    public virtual bool CanReceiveSpecificItemFromBelt(Bld_ConveyorBelt belt)
     {
         ItemSO itemSO = belt.GetHoldItem().itemSO;
         foreach (RecipeSO.RecipeItem e in currentRecipe.ingredientsItems)
@@ -267,5 +265,10 @@ public class PlacedObject : MonoBehaviour
     public float GetTimeRemaining()
     {
         return Mathf.Floor((timer - timerCount) * 10) / 10;
+    }
+
+    public virtual void ReceiveItem(WorldItem item) //placed object receive a world item
+    {
+        Debug.Log("WARNING : RECEIVEITEM NOT SETUP IN :" + transform.name);
     }
 }

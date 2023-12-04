@@ -83,6 +83,7 @@ MonoBehaviour:
   - {fileID: 7932293795117052947}
   - {fileID: 2572512349052859839}
   - {fileID: 3756007426989325139}
+  rotatingIndex: 0
   holdPoint: {fileID: 6677250912095173261}
 --- !u!1001 &844708265874178486
 PrefabInstance:

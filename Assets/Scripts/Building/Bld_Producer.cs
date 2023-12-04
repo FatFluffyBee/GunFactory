@@ -72,13 +72,18 @@ public class Bld_Producer : PlacedObject
 
         if (conveyorBelt != null && producedItemsQty[0] > 0) //maybe remplacer par fonction plus génerale
         {
-            if (conveyorBelt.GetHoldItem() == null)
+            if (conveyorBelt.CanReceiveItem())
             {
                 producedItemsQty[0]--;
                 WorldItem itemInstance = Instantiate(currentRecipe.producedItems[0].item.worldItemPrefab, conveyorBelt.GetHoldPointPosition(), transform.rotation).GetComponent<WorldItem>();
-                conveyorBelt.SetHoldItem(itemInstance);
-
+                conveyorBelt.ReceiveItem(itemInstance);
             }
         }
+    }
+
+    public override void ReceiveItem(WorldItem item)
+    {
+        AddItemToStorage(item.itemSO);
+        Destroy(item.gameObject);
     }
 }
