@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class FactoryGrid : MonoBehaviour
 {
+    public GunBehavior GunBehavior;
     public static FactoryGrid instance;
 
     [SerializeField] private List<PlacableObjectSO> arrayBuildingSO;

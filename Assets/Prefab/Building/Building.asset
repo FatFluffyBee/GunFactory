@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72777116776376542b16fc3123942a1f, type: 3}
+  m_Name: Building
+  m_EditorClassIdentifier: 
+  buildingName: AutoEmitter
+  prefab: {fileID: 7132678093362036143, guid: dacf4798e1f4bea439a8b6c0509de4ec, type: 3}
+  phantomVisual: {fileID: 6093997812692268878, guid: fc232597ca085704d88398e1d8b75a30, type: 3}
+  width: 1
+  height: 1

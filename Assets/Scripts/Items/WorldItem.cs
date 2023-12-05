@@ -7,7 +7,7 @@ public class WorldItem : MonoBehaviour
     public bool isMoving = false;
     Vector3 targetPosition;
     public ItemSO itemSO;
-    private int speed = 2; 
+    private int speed = 10; 
     PlacedObject itemHolder;
 
 
