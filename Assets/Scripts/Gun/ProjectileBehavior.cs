@@ -9,7 +9,7 @@ public class ProjectileBehavior : MonoBehaviour
 
     private void Update()
     {
-        transform.position += Vector3.forward * speed * Time.deltaTime;
+        transform.position += transform.right * speed * Time.deltaTime;
     }
 
     public void Setup(float speed)
